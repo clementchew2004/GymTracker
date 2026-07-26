@@ -179,12 +179,12 @@ describe("weeklySummary", () => {
   // ─── Week-boundary edges ───────────────────────────────────────────
   describe("week boundaries", () => {
     it("includes a set logged exactly at weekStart 00:00", () => {
-      const sets = [makeSet({ date: new Date("2026-07-13T00:00:00") })];
+      const sets = [makeSet({ date: new Date("2026-07-13T00:00:00Z") })];
       expect(weeklySummary(sets, WEEK_START).sessionCompleted.count).toBe(1);
     });
 
     it("excludes a set logged exactly one week after weekStart", () => {
-      const sets = [makeSet({ date: new Date("2026-07-20T00:00:00") })];
+      const sets = [makeSet({ date: new Date("2026-07-20T00:00:00Z") })];
       expect(weeklySummary(sets, WEEK_START).sessionCompleted.count).toBe(0);
     });
   });
