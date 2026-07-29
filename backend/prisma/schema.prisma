@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  plannedDayTypes String[] @default(["PUSH", "PULL", "LEGS", "UPPER"])
+  sessions    Session[]
+  bodyWeights BodyWeight[]
+}
+
+model Exercise {
+  id             String     @id @default(cuid())
+  name           String
+  muscleGroup    String
+  defaultDayType String?
+  sets           SetEntry[]
+}
+
+model Session {
+  id      String     @id @default(cuid())
+  date    DateTime   @default(now())
+  dayType String
+  userId  String
+  user    User       @relation(fields: [userId], references: [id])
+  sets    SetEntry[]
+}
+
+model SetEntry {
+  id         String   @id @default(cuid())
+  setNumber  Int
+  weight     Float
+  reps       Int
+  rpe        Float?
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id])
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model BodyWeight {
+  id       String   @id @default(cuid())
+  date     DateTime @default(now())
+  weightKg Float
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+}

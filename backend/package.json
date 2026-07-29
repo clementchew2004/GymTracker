@@ -12,7 +12,11 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "prisma": "^6.19.3",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3"
   }
 }

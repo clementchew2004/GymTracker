@@ -1,7 +1,6 @@
 import { estimate1RM } from "./estimate1RM.js";
 import { weeklyVolume } from "./weeklyVolume.js";
 
-type DayTypes = "PUSH" | "PULL" | "LEGS" | "UPPER";
 
 export type SetForSummary = {
   weight: number;
@@ -10,11 +9,11 @@ export type SetForSummary = {
   exerciseId: string;
   date: Date;
   sessionId: string;
-  dayType: DayTypes;
+  dayType: string;
 }
 
 export type WeeklySummary = {
-    sessionCompleted: {count: number, dayTypesHit: DayTypes[] }
+    sessionsCompleted: {count: number, dayTypesHit: string[], dayTypesMissed: string[] }
     volumeByMuscleGroup: Record<string, { thisWeek: number; delta: number }>;
     new1RMs: { exerciseId: string; estimated1RM: number }[];
     beatLastSession: number;
@@ -31,18 +30,21 @@ function priorWeekStart (weekStart: Date): Date {
     return new Date(weekStart.getTime() - 7 * MS_PER_DAY);
 }
 
-function computeSessionCompleted(sets: SetForSummary[], weekStart: Date) : {count: number; dayTypesHit: DayTypes[] } {
+function computeSessionsCompleted(sets: SetForSummary[], weekStart: Date, plannedDayTypes: string[]) : {count: number; dayTypesHit: string[], dayTypesMissed: string[]} {
     const thisWeek = sets.filter((s) => isInWeek(s.date, weekStart));
     const sessionIds = new Set<string>();
-    const dayTypes = new Set<DayTypes>(); 
+    const dayTypes = new Set<string>(); 
 
     for (const s of thisWeek) {
         sessionIds.add(s.sessionId);
         dayTypes.add(s.dayType);
     }
+
+    const dayTypesMissed = plannedDayTypes.filter( d => !dayTypes.has(d));
     return {
         count: sessionIds.size, 
         dayTypesHit: Array.from(dayTypes), 
+        dayTypesMissed,
     } 
 }
 
@@ -124,9 +126,10 @@ function computeBeatLastSession(
 export function weeklySummary(
   sets: SetForSummary[],
   weekStart: Date,
+  plannedDayTypes: string[] 
 ): WeeklySummary {
   return {
-    sessionCompleted: computeSessionCompleted(sets, weekStart),
+    sessionsCompleted: computeSessionsCompleted(sets, weekStart, plannedDayTypes),
     volumeByMuscleGroup: computeVolumeByMuscleGroup(sets, weekStart),
     new1RMs: computeNew1RMs(sets, weekStart),
     beatLastSession: computeBeatLastSession(sets, weekStart),
