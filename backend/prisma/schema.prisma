@@ -21,7 +21,7 @@ model Exercise {
   id             String     @id @default(cuid())
   name           String
   muscleGroup    String
-  defaultDayType String?
+  defaultDayType String[] @default([])
   sets           SetEntry[]
 }
 
