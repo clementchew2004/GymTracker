@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import test from "node:test";
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,17 @@ const exercises: {
 ];
 
 async function main() {
+  const testUser = await prisma.user.upsert({
+    where: {email: "test@example.com"}, 
+    update: {},
+    create: {
+      email: "test@example.com",
+      password: "placeholder",
+      plannedDayTypes: ["PUSH", "PULL", "LEGS", "UPPER"],
+    },
+  });
+  console.log(`Test user id: ${testUser}`);
+
   let created = 0;
   for (const ex of exercises) {
     const existing = await prisma.exercise.findFirst({

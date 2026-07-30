@@ -180,8 +180,8 @@ export function estimate1RM(weight: number, reps: number): number {
 Bottom-up: things that depend on nothing first, UI last.
 
 - [x] 1. Pure logic (`estimate1RM`, weekly volume, `weeklySummary`) + Vitest tests
-- [ ] 2. Prisma schema + `migrate` + seed real Push/Pull/Legs/Upper exercises  ← **current task**
-- [ ] 3. Sessions & sets endpoints (test with curl before any UI)
+- [x] 2. Prisma schema + `migrate` + seed real Push/Pull/Legs/Upper exercises
+- [ ] 3. Sessions & sets endpoints (test with curl before any UI)  ← **current task**
 - [ ] 4. Auth (register/login, JWT), then add `userId` scoping to all routes
 - [ ] 5. Frontend: api wrappers → logging screen → "last time" panel
 - [ ] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
