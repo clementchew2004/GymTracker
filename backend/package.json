@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "tsx watch src/app.ts"
+    "dev": "tsx watch --env-file=.env src/app.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -15,8 +15,10 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.1",
     "prisma": "^6.19.3",
     "tsx": "^4.23.1",
@@ -25,7 +27,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
   }
 }

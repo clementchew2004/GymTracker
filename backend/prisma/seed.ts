@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import test from "node:test";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -39,12 +39,13 @@ const exercises: {
 ];
 
 async function main() {
+  const testHashPassword = await bcrypt.hash("testpassword123", 12);
   const testUser = await prisma.user.upsert({
-    where: {email: "test@example.com"}, 
-    update: {},
+    where: {email: "test@local"}, 
+    update: {password: testHashPassword},
     create: {
-      email: "test@example.com",
-      password: "placeholder",
+      email: "test@local",
+      password: testHashPassword,
       plannedDayTypes: ["PUSH", "PULL", "LEGS", "UPPER"],
     },
   });

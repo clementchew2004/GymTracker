@@ -4,18 +4,15 @@ import { requireUserId } from "./middleware/userId.js";
 import exercisesRouter from "./routes/exercises.js";
 import sessionRouter from  "./routes/session.js";
 import setsRouter from "./routes/sets.js";
+import authRouter from "./routes/auth.js"
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Health check — no auth needed. Useful for confirming the server is alive.
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
 
-// Everything under /api requires the X-User-Id header.
+app.use("/api/auth", authRouter);
 app.use("/api", requireUserId);
 
 app.use("/api/exercises", exercisesRouter);
