@@ -51,12 +51,10 @@ router.post("/", async (req, res) => {
         return;
     }
     const session = await prisma.session.create({
-        data: {dayType, userId}
+        data: {dayType, userId},
+        include: {sets: true},
     });
-    res.status(201).json({
-        message: "New session created",
-        session: session
-    });
+    res.status(201).json(session);
 })
 
 export default router; 

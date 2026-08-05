@@ -76,4 +76,24 @@ router.post("/login", async (req, res) => {
   });
 });
 
+export const meRouter = Router();
+meRouter.get("/me", async (_req, res) => {
+  const userId = res.locals.userId as string | undefined;
+  if (!userId) {
+    res.status(401).json({ error: "not authenticated" });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, plannedDayTypes: true },
+  });
+  if (!user) {
+    res.status(401).json({ error: "user no longer exists" });
+    return;
+  }
+
+  res.json(user);
+ });
+
 export default router;

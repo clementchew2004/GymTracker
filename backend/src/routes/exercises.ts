@@ -24,12 +24,7 @@ router.post("/", async(req, res) => {
     const exercise = await prisma.exercise.create ({
         data: {name, muscleGroup, defaultDayType : defaultDayType ?? [] }
     })
-    return(res.status(201).json(
-        {
-        message: "Exercise created successfully",
-        exercise: exercise
-        }
-    ));
+    res.status(201).json(exercise);
 })
 
 export default router; 
