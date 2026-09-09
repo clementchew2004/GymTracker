@@ -28,3 +28,11 @@ export function createSession(dayType: string): Promise<Session> {
     body: JSON.stringify({ dayType }),
   });
 }
+
+// Most recent session containing this exercise, with only that exercise's
+// sets included. Returns null when the exercise has never been logged.
+export function getLastSessionFor(exerciseId: string): Promise<Session | null> {
+  return apiFetch<Session | null>(
+    `/api/sessions/last?exerciseId=${encodeURIComponent(exerciseId)}`,
+  );
+}

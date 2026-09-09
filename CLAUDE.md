@@ -62,26 +62,27 @@ every chart is a query over `SetEntry`.
 
 ```prisma
 model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  password    String       // bcrypt hash, NEVER plaintext
-  createdAt   DateTime     @default(now())
-  sessions    Session[]
-  bodyWeights BodyWeight[]
+  id              String       @id @default(cuid())
+  email           String       @unique
+  password        String       // bcrypt hash, NEVER plaintext
+  createdAt       DateTime     @default(now())
+  plannedDayTypes String[]     @default(["PUSH", "PULL", "LEGS", "UPPER"])
+  sessions        Session[]
+  bodyWeights     BodyWeight[]
 }
 
 model Exercise {
   id             String     @id @default(cuid())
   name           String
   muscleGroup    String     // "chest", "back", "quads"...
-  defaultDayType DayType?
+  defaultDayType String[]   @default([])  // days this exercise appears on
   sets           SetEntry[]
 }
 
 model Session {
   id      String     @id @default(cuid())
   date    DateTime   @default(now())
-  dayType DayType
+  dayType String
   userId  String
   user    User       @relation(fields: [userId], references: [id])
   sets    SetEntry[]
@@ -106,14 +107,12 @@ model BodyWeight {
   userId   String
   user     User     @relation(fields: [userId], references: [id])
 }
-
-enum DayType {
-  PUSH
-  PULL
-  LEGS
-  UPPER
-}
 ```
+
+**Day types are plain strings, not an enum.** Each user defines their own split in
+`User.plannedDayTypes`, so friends on a Bro Split or Upper/Lower can use the app
+without a schema change. `Exercise.defaultDayType` is an array because one exercise
+(e.g. Shoulder Press) can appear on several days while keeping a single 1RM history.
 
 ## API surface
 
@@ -125,6 +124,7 @@ keeping users' data separate, so it must never be omitted.
 |---------------------------------------|-----------------------------------------------|----------------------------|
 | `POST /api/auth/register`             | email, password                               | auth token                 |
 | `POST /api/auth/login`                | email, password                               | auth token                 |
+| `GET  /api/auth/me`                   | —                                             | the caller's own User       |
 | `GET  /api/exercises`                 | —                                             | Exercise[]                 |
 | `POST /api/exercises`                 | name, muscleGroup, defaultDayType?            | Exercise                   |
 | `POST /api/sessions`                  | dayType                                        | Session                    |
@@ -183,8 +183,8 @@ Bottom-up: things that depend on nothing first, UI last.
 - [x] 2. Prisma schema + `migrate` + seed real Push/Pull/Legs/Upper exercises
 - [x] 3. Sessions & sets endpoints (test with curl before any UI)
 - [x] 4. Auth (register/login, JWT), then add `userId` scoping to all routes
-- [ ] 5. Frontend: api wrappers → logging screen → "last time" panel  ← **current task**
-- [ ] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
+- [x] 5. Frontend: api wrappers → logging screen → "last time" panel
+- [ ] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"  ← **current task**
 - [ ] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end
 - [ ] 8. Polish: PWA/offline, rest timer, bodyweight tracking
 - [ ] 9. Deploy (Vercel + Railway/Render + Postgres), README with screenshots, tests

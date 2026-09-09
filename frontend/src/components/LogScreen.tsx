@@ -3,6 +3,7 @@ import type { User } from "../api/auth";
 import { getExercises, type Exercise } from "../api/exercises";
 import { createSession, getSessions, type Session } from "../api/sessions";
 import { logSet } from "../api/sets";
+import { LastTimePanel } from "./LastTimePanel";
 
 type Props = { user: User };
 
@@ -130,6 +131,8 @@ export function LogScreen({ user }: Props) {
 
       {selectedId && (
         <>
+          <LastTimePanel exerciseId={selectedId} currentSessionId={session.id} />
+
           {setsForSelected.length > 0 && (
             <ul className="mb-5 space-y-1 text-sm">
               {setsForSelected.map((s) => (
