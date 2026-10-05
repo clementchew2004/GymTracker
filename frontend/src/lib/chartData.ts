@@ -14,6 +14,7 @@ export type SetInput = {
 };
 
 export type SessionInput = {
+  id?: string;
   date: string;
   sets: SetInput[];
 };
@@ -151,4 +152,35 @@ function shortDate(iso: string): string {
     day: "numeric",
     month: "short",
   });
+}
+
+// ── Personal records ─────────────────────────────────────────────
+
+/**
+ * Highest estimated 1RM ever recorded for an exercise.
+ *
+ * `excludeSessionId` leaves one session out, which is how the logging screen
+ * asks "what was my record BEFORE today?" — otherwise the set you just logged
+ * becomes its own record to beat and nothing is ever a PR.
+ *
+ * Returns 0 when the exercise has no history, so any positive lift counts.
+ */
+export function bestEstimated1RM(
+  sessions: SessionInput[],
+  exerciseId: string,
+  excludeSessionId?: string,
+): number {
+  let best = 0;
+
+  for (const session of sessions) {
+    if (excludeSessionId && session.id === excludeSessionId) continue;
+
+    for (const set of session.sets) {
+      if (set.exerciseId !== exerciseId) continue;
+      const estimate = estimate1RM(set.weight, set.reps);
+      if (estimate > best) best = estimate;
+    }
+  }
+
+  return best;
 }

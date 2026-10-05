@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   oneRMSeries,
   volumeByWeek,
+  bestEstimated1RM,
   startOfWeek,
   type SessionInput,
 } from "../chartData";
@@ -133,5 +134,39 @@ describe("volumeByWeek", () => {
       ]),
     ];
     expect(volumeByWeek(sessions).weeks).toEqual([]);
+  });
+});
+
+describe("bestEstimated1RM", () => {
+  it("returns 0 when the exercise has no history", () => {
+    expect(bestEstimated1RM([], "bench")).toBe(0);
+  });
+
+  it("finds the best across every session", () => {
+    const sessions = [
+      { id: "s1", date: "2026-08-03T10:00:00Z", sets: [set(60, 10)] }, // 80
+      { id: "s2", date: "2026-08-10T10:00:00Z", sets: [set(80, 5)] },  // 93.3
+      { id: "s3", date: "2026-08-17T10:00:00Z", sets: [set(70, 8)] },  // 88.7
+    ];
+    expect(bestEstimated1RM(sessions, "bench")).toBeCloseTo(93.3, 1);
+  });
+
+  it("excludes the named session so today can't be its own record", () => {
+    const sessions = [
+      { id: "s1", date: "2026-08-03T10:00:00Z", sets: [set(60, 10)] }, // 80
+      { id: "s2", date: "2026-08-10T10:00:00Z", sets: [set(90, 5)] },  // 105
+    ];
+    expect(bestEstimated1RM(sessions, "bench", "s2")).toBeCloseTo(80, 1);
+  });
+
+  it("ignores other exercises", () => {
+    const sessions = [
+      {
+        id: "s1",
+        date: "2026-08-03T10:00:00Z",
+        sets: [set(60, 10, "bench"), set(200, 5, "squat")],
+      },
+    ];
+    expect(bestEstimated1RM(sessions, "bench")).toBeCloseTo(80, 1);
   });
 });

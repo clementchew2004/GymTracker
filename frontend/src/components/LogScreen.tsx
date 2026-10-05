@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "../api/auth";
 import { getExercises, type Exercise } from "../api/exercises";
 import { createSession, getSessions, type Session } from "../api/sessions";
 import { logSet } from "../api/sets";
+import { bestEstimated1RM } from "../lib/chartData";
+import { estimate1RM } from "../lib/estimate1RM";
 import { LastTimePanel } from "./LastTimePanel";
 
 type Props = { user: User };
@@ -19,6 +21,7 @@ function isToday(iso: string): boolean {
 
 export function LogScreen({ user }: Props) {
   const [session, setSession] = useState<Session | null>(null);
+  const [history, setHistory] = useState<Session[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
   const [weight, setWeight] = useState("");
@@ -26,15 +29,42 @@ export function LogScreen({ user }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // On mount: if there's already a session from today, resume it.
+  // On mount: keep the full history (needed to know what counts as a PR)
+  // and resume today's session if there is one.
   useEffect(() => {
     getSessions()
       .then((all) => {
+        setHistory(all);
         const todays = all.find((s) => isToday(s.date));
         if (todays) setSession(todays);
       })
       .catch(() => setError("Couldn't load your sessions"));
   }, []);
+
+  // The record to beat for the selected exercise. Today's own session is
+  // excluded — otherwise the set you just logged becomes its own record
+  // and nothing would ever register as a PR.
+  const priorBest = useMemo(
+    () =>
+      selectedId && session
+        ? bestEstimated1RM(history, selectedId, session.id)
+        : 0,
+    [history, selectedId, session?.id],
+  );
+
+  // The selected exercise's sets from the most recent earlier session, so
+  // each set logged today can be compared against its counterpart.
+  const lastSessionSets = useMemo(() => {
+    if (!selectedId || !session) return [];
+    const prior = history
+      .filter(
+        (s) =>
+          s.id !== session.id &&
+          s.sets.some((x) => x.exerciseId === selectedId),
+      )
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    return prior?.sets.filter((x) => x.exerciseId === selectedId) ?? [];
+  }, [history, selectedId, session?.id]);
 
   // Whenever the session changes, load the exercises for its day type.
   useEffect(() => {
@@ -135,12 +165,45 @@ export function LogScreen({ user }: Props) {
 
           {setsForSelected.length > 0 && (
             <ul className="mb-5 space-y-1 text-sm">
-              {setsForSelected.map((s) => (
-                <li key={s.id} className="flex gap-3 text-neutral-300">
-                  <span className="text-neutral-600 w-10">Set {s.setNumber}</span>
-                  <span className="tabular-nums">{s.weight} kg × {s.reps}</span>
-                </li>
-              ))}
+              {setsForSelected.map((s) => {
+                const estimate = estimate1RM(s.weight, s.reps);
+                // Only a PR if there was something to beat — a first-ever
+                // lift is technically a record but saying so is noise.
+                const isPR = priorBest > 0 && estimate > priorBest;
+
+                // Same set number, last time round.
+                const counterpart = lastSessionSets.find(
+                  (p) => p.setNumber === s.setNumber,
+                );
+                const gain = counterpart
+                  ? estimate - estimate1RM(counterpart.weight, counterpart.reps)
+                  : 0;
+                // A PR already says more than a delta would — don't show both.
+                const beatLast = !isPR && gain > 0.05;
+
+                return (
+                  <li key={s.id} className="flex items-center gap-3 text-neutral-300">
+                    <span className="text-neutral-600 w-10">Set {s.setNumber}</span>
+                    <span className="tabular-nums">{s.weight} kg × {s.reps}</span>
+                    {isPR && (
+                      <span
+                        title={`Beats your previous best of ${priorBest.toFixed(1)} kg estimated 1RM`}
+                        className="rounded bg-amber-500/15 px-1.5 py-0.5 text-xs font-medium text-amber-400"
+                      >
+                        PR
+                      </span>
+                    )}
+                    {beatLast && (
+                      <span
+                        title="Stronger than the same set last session"
+                        className="text-xs tabular-nums text-emerald-400"
+                      >
+                        +{gain.toFixed(1)} kg
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
 

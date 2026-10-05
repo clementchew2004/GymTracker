@@ -184,8 +184,8 @@ Bottom-up: things that depend on nothing first, UI last.
 - [x] 3. Sessions & sets endpoints (test with curl before any UI)
 - [x] 4. Auth (register/login, JWT), then add `userId` scoping to all routes
 - [x] 5. Frontend: api wrappers → logging screen → "last time" panel
-- [ ] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"  ← **current task**
-- [ ] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end
+- [x] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
+- [ ] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end  ← **current task**
 - [ ] 8. Polish: PWA/offline, rest timer, bodyweight tracking
 - [ ] 9. Deploy (Vercel + Railway/Render + Postgres), README with screenshots, tests
 
