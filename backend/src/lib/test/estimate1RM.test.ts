@@ -13,4 +13,14 @@ describe("Estimate 1RM", () => {
   it("returns the weight itself for 0 rep", () => {
     expect(estimate1RM(50, 0)).toBe(50);
   })
+
+  // The single-rep rule is about REPS, not a particular weight.
+  it("applies the single-rep rule at any weight, not just 100kg", () => {
+    expect(estimate1RM(60, 1)).toBe(60);
+    expect(estimate1RM(142.5, 1)).toBe(142.5);
+  })
+
+  it("still extrapolates for multi-rep sets at 100kg", () => {
+    expect(estimate1RM(100, 10)).toBeCloseTo(133.33, 1);
+  })
 });
