@@ -1,0 +1,6 @@
+{
+  // Production build only. Inherits everything from tsconfig.json but drops
+  // the tests, so dist/ contains just what the server needs to run.
+  "extends": "./tsconfig.json",
+  "exclude": ["src/lib/test"]
+}

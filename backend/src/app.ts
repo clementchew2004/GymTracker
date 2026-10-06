@@ -9,7 +9,15 @@ import authRouter, {meRouter} from "./routes/auth.js"
 
 const app = express();
 
-app.use(cors());
+// Which front ends may call this API. Comma-separated so a preview deploy
+// can be allowed alongside production. Defaults to the local Vite server so
+// nothing extra is needed for development.
+const allowedOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
@@ -26,7 +34,13 @@ app.use("/api/bodyweight", requireUserId, bodyweightRouter);
 
 app.use("/api/auth", requireUserId, meRouter); //Protected
 
-const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+// Hosting platforms assign a port and expect the app to bind to it. Binding
+// to a hardcoded one makes the service unreachable however healthy it looks.
+const PORT = Number(process.env.PORT) || 4000;
+
+// 0.0.0.0 rather than the default loopback — inside a container, binding to
+// localhost means nothing outside the container can reach you.
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`CORS allows: ${allowedOrigins.join(", ")}`);
 });

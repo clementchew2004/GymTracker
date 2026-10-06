@@ -192,22 +192,33 @@ Bottom-up: things that depend on nothing first, UI last.
 - [x] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
 - [x] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end
 - [x] 8. Polish: PWA (installable + cached shell), rest timer, bodyweight tracking
-- [ ] 9. Deploy (Vercel + Railway/Render + Postgres), README with screenshots, tests  ← **current task**
+- [~] 9. Deploy — code is deploy-ready (PORT/CORS from env, build+start scripts,
+       migrate-on-start, .env.example, CI, README with screenshots). Creating the
+       Vercel/Render projects is the remaining step.  ← **current task**
 
 ## Common commands
 
-> Fill in exact scripts as they're created. Expected shape:
-
 ```bash
 # backend/
-npx prisma migrate dev        # apply schema changes
-npx prisma studio             # inspect the DB
-npm run dev                   # start express server
-npm test                      # run vitest
+npm run dev                   # tsx watch, reads .env, port 4000
+npm test                      # vitest (27 tests)
+npm run build                 # tsc -p tsconfig.build.json → dist/
+npm start                     # prisma migrate deploy && node dist/app.js
+npx prisma migrate dev        # create + apply a migration locally
+npx prisma studio             # browse the DB
+npx prisma db seed            # 20 exercises + test@example.com / testpassword123
 
 # frontend/
-npm run dev                   # start vite dev server
+npm run dev                   # vite, port 5173
+npm test                      # vitest (25 tests)
+npm run build                 # tsc -b && vite build (emits sw.js + manifest)
+npm run preview               # serve the production build on 4173
 ```
+
+**Environment variables.** `backend/.env.example` and `frontend/.env.example`
+list what each half needs. Backend: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`,
+and `PORT` (injected by the host in production). Frontend: `VITE_API_URL`, baked
+in at build time — changing it needs a rebuild, not a restart.
 
 ## Working with Claude Code on this project
 
