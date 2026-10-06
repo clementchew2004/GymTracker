@@ -6,6 +6,7 @@ import { logSet } from "../api/sets";
 import { bestEstimated1RM } from "../lib/chartData";
 import { estimate1RM } from "../lib/estimate1RM";
 import { LastTimePanel } from "./LastTimePanel";
+import { SummaryBanner } from "./SummaryBanner";
 
 type Props = { user: User };
 
@@ -111,6 +112,7 @@ export function LogScreen({ user }: Props) {
   if (!session) {
     return (
       <main className="p-6 max-w-md">
+        <SummaryBanner />
         <h2 className="text-xl font-semibold mb-1">Start a session</h2>
         <p className="text-neutral-500 text-sm mb-5">What are you training today?</p>
         {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
@@ -135,6 +137,7 @@ export function LogScreen({ user }: Props) {
 
   return (
     <main className="p-6 max-w-md">
+      <SummaryBanner />
       <div className="flex items-baseline justify-between mb-5">
         <h2 className="text-xl font-semibold">{session.dayType}</h2>
         <span className="text-sm text-neutral-500">

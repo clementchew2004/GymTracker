@@ -3,6 +3,7 @@ import { NavLink, Route, Routes } from "react-router";
 import { AuthScreen } from "./components/AuthScreen";
 import { LogScreen } from "./components/LogScreen";
 import { ProgressScreen } from "./components/ProgressScreen";
+import { WeeklySummaryScreen } from "./components/WeeklySummaryScreen";
 import { clearToken, getToken } from "./api/client";
 import { getMe, type User } from "./api/auth";
 
@@ -47,6 +48,7 @@ function App() {
         <nav className="flex gap-1">
           <NavLink to="/" end className={tabClass}>Log</NavLink>
           <NavLink to="/progress" className={tabClass}>Progress</NavLink>
+          <NavLink to="/summary" className={tabClass}>Summary</NavLink>
         </nav>
 
         <div className="ml-auto flex items-center gap-4 text-sm">
@@ -63,6 +65,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LogScreen user={user} />} />
         <Route path="/progress" element={<ProgressScreen />} />
+        <Route path="/summary" element={<WeeklySummaryScreen user={user} />} />
       </Routes>
     </div>
   );
