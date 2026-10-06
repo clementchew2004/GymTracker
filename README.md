@@ -1,9 +1,15 @@
 # Gym Progression Tracker
 
+**[Live app →](https://gym-tracker-eosin-nine.vercel.app)**
+
 A full-stack web app for logging gym sessions and seeing whether you're actually
 getting stronger. Built around a 4-day Push / Pull / Legs / Upper split with
 pyramid loading — every set is its own record, so the app can tell you what you
 lifted last time and whether today beat it.
+
+> Hosted on free tiers, so the first request after a quiet spell takes 30–60
+> seconds while the server and database wake up. Sign up with any email —
+> accounts are self-contained and nothing is sent anywhere.
 
 ![Logging a set, with last session's numbers and a PR badge](docs/screenshots/log.jpg)
 
@@ -122,7 +128,8 @@ cd frontend && npm test       # 25
 ## Deploying
 
 Three pieces, three places: static host for the frontend, application host for
-the backend, managed Postgres for the data.
+the backend, managed Postgres for the data. This one runs on Vercel, Render and
+Neon respectively, all on free tiers.
 
 **Backend** — set `DATABASE_URL`, `JWT_SECRET` and `CORS_ORIGIN` (your frontend's
 URL) in the platform's dashboard. Build with `npm run build`, start with

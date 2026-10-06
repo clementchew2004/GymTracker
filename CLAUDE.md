@@ -192,9 +192,17 @@ Bottom-up: things that depend on nothing first, UI last.
 - [x] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
 - [x] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end
 - [x] 8. Polish: PWA (installable + cached shell), rest timer, bodyweight tracking
-- [~] 9. Deploy — code is deploy-ready (PORT/CORS from env, build+start scripts,
-       migrate-on-start, .env.example, CI, README with screenshots). Creating the
-       Vercel/Render projects is the remaining step.  ← **current task**
+- [x] 9. Deploy (Vercel + Render + Neon), README with screenshots, CI
+
+**All nine steps complete.** The app is live:
+- Frontend → https://gym-tracker-eosin-nine.vercel.app (Vercel)
+- Backend → https://gymtracker-prss.onrender.com (Render)
+- Database → Neon Postgres
+
+Both hosts are free tier and sleep when idle, so the first request after a quiet
+spell takes 30–60s. `VITE_API_URL` is baked in at build time, so changing it on
+Vercel needs a **redeploy**, not just a save — `CORS_ORIGIN` on Render is read at
+runtime and takes effect on restart.
 
 ## Common commands
 
