@@ -134,6 +134,11 @@ keeping users' data separate, so it must never be omitted.
 | `GET  /api/bodyweight`                | —                                             | BodyWeight[]               |
 | `POST /api/bodyweight`                | weightKg, date?                               | BodyWeight                 |
 
+**PWA scope.** The app installs to a home screen and its shell is precached, so it
+opens without a network. Logging still needs the server — true offline writes would
+need an IndexedDB outbox plus sync-on-reconnect, deliberately deferred until after
+deploy, when it can be tested on a real phone against a real URL.
+
 **No stats endpoints.** 1RM curves and volume are computed on the frontend from the raw
 sets returned by `GET /api/sessions`. Keep the math in pure functions (see below).
 
@@ -186,8 +191,8 @@ Bottom-up: things that depend on nothing first, UI last.
 - [x] 5. Frontend: api wrappers → logging screen → "last time" panel
 - [x] 6. Charts (1RM line, weekly volume), PR badges, "beat last session"
 - [x] 7. Weekly summary screen — renders `weeklySummary()` output; surfaces automatically at week end
-- [ ] 8. Polish: PWA/offline, rest timer, bodyweight tracking  ← **current task**
-- [ ] 9. Deploy (Vercel + Railway/Render + Postgres), README with screenshots, tests
+- [x] 8. Polish: PWA (installable + cached shell), rest timer, bodyweight tracking
+- [ ] 9. Deploy (Vercel + Railway/Render + Postgres), README with screenshots, tests  ← **current task**
 
 ## Common commands
 

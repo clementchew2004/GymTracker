@@ -4,6 +4,7 @@ import { requireUserId } from "./middleware/userId.js";
 import exercisesRouter from "./routes/exercises.js";
 import sessionRouter from  "./routes/session.js";
 import setsRouter from "./routes/sets.js";
+import bodyweightRouter from "./routes/bodyweight.js";
 import authRouter, {meRouter} from "./routes/auth.js"
 
 const app = express();
@@ -21,6 +22,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/exercises", requireUserId, exercisesRouter);
 app.use("/api/sessions", requireUserId, sessionRouter)
 app.use("/api/sets", requireUserId, setsRouter);
+app.use("/api/bodyweight", requireUserId, bodyweightRouter);
 
 app.use("/api/auth", requireUserId, meRouter); //Protected
 

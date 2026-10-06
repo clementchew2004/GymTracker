@@ -7,6 +7,7 @@ import { bestEstimated1RM } from "../lib/chartData";
 import { estimate1RM } from "../lib/estimate1RM";
 import { LastTimePanel } from "./LastTimePanel";
 import { SummaryBanner } from "./SummaryBanner";
+import { RestTimer, loadRestSeconds } from "./RestTimer";
 
 type Props = { user: User };
 
@@ -29,6 +30,8 @@ export function LogScreen({ user }: Props) {
   const [reps, setReps] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [restSeconds, setRestSeconds] = useState(loadRestSeconds);
+  const [restEndsAt, setRestEndsAt] = useState<number | null>(null);
 
   // On mount: keep the full history (needed to know what counts as a PR)
   // and resume today's session if there is one.
@@ -101,6 +104,8 @@ export function LogScreen({ user }: Props) {
       });
       setSession({ ...session, sets: [...session.sets, created] });
       setReps("");
+      // Rest starts the moment the set lands, not when you remember to tap.
+      setRestEndsAt(Date.now() + restSeconds * 1000);
     } catch {
       setError("Couldn't log that set");
     } finally {
@@ -238,6 +243,16 @@ export function LogScreen({ user }: Props) {
               Log
             </button>
           </form>
+
+          <div className="mt-4">
+            <RestTimer
+              endsAt={restEndsAt}
+              restSeconds={restSeconds}
+              onChangeRestSeconds={setRestSeconds}
+              onExtend={(s) => setRestEndsAt((e) => (e ?? Date.now()) + s * 1000)}
+              onDismiss={() => setRestEndsAt(null)}
+            />
+          </div>
         </>
       )}
     </main>

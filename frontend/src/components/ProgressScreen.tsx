@@ -17,21 +17,8 @@ import {
   oneRMSeries,
   volumeByWeek,
 } from "../lib/chartData";
-
-// Stable categorical palette, picked to stay legible on the dark ground.
-const SERIES_COLORS = [
-  "#60a5fa", "#34d399", "#fbbf24", "#f87171", "#a78bfa",
-  "#22d3ee", "#fb923c", "#f472b6", "#a3e635", "#94a3b8",
-];
-
-const axisStyle = { fill: "#737373", fontSize: 12 };
-
-const tooltipStyle = {
-  backgroundColor: "#171717",
-  border: "1px solid #404040",
-  borderRadius: "6px",
-  fontSize: "13px",
-};
+import { BodyWeightSection } from "./BodyWeightSection";
+import { SERIES_COLORS, axisStyle, tooltipStyle } from "./chartTheme";
 
 export function ProgressScreen() {
   const [sessions, setSessions] = useState<Session[] | null>(null);
@@ -73,14 +60,19 @@ export function ProgressScreen() {
     return <main className="p-6"><p className="text-sm text-neutral-600">Loading your history…</p></main>;
   }
 
+  // Bodyweight is independent of training history, so it still renders here —
+  // you might weigh in before you've logged a single session.
   if (sessions.length === 0) {
     return (
-      <main className="p-6 max-w-md">
-        <h2 className="text-xl font-semibold mb-1">Progress</h2>
-        <p className="text-sm text-neutral-500">
-          Nothing to chart yet. Log a few sessions and your 1RM trend and weekly
-          volume will show up here.
-        </p>
+      <main className="max-w-3xl space-y-10 p-6">
+        <section>
+          <h2 className="mb-1 text-xl font-semibold">Progress</h2>
+          <p className="text-sm text-neutral-500">
+            No lift charts yet. Log a few sessions and your 1RM trend and weekly
+            volume will show up here.
+          </p>
+        </section>
+        <BodyWeightSection />
       </main>
     );
   }
@@ -182,6 +174,9 @@ export function ProgressScreen() {
           </div>
         )}
       </section>
+
+      {/* ── Bodyweight ────────────────────────────────────── */}
+      <BodyWeightSection />
     </main>
   );
 }
