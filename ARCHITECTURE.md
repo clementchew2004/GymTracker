@@ -1,6 +1,7 @@
-# CLAUDE.md — Gym Progression Tracker
+# Architecture — Gym Progression Tracker
 
-Project context for both the developer and Claude Code. Read this before making changes.
+How this project is put together: the data model, the API surface, and the
+conventions that hold them together. Read this before making changes.
 
 ## What this is
 
@@ -52,7 +53,7 @@ gym-tracker/
 │       ├── lib/               # shared pure logic (may mirror backend/lib)
 │       ├── components/
 │       └── App.tsx
-└── CLAUDE.md
+└── ARCHITECTURE.md
 ```
 
 ## Data model (Prisma)
@@ -228,8 +229,9 @@ list what each half needs. Backend: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`,
 and `PORT` (injected by the host in production). Frontend: `VITE_API_URL`, baked
 in at build time — changing it needs a rebuild, not a restart.
 
-## Working with Claude Code on this project
+## Maintaining this document
 
-- Use a **local** session for building and debugging — it needs the local Postgres and dev server.
-- Use a **cloud** session to hand off a self-contained chore (e.g. "add tests for lib/") and get a PR back.
-- Keep this file updated as the source of truth. When a decision changes, change it here.
+This file is the source of truth for the project's shape — schema, API surface,
+conventions and build order. When a decision changes, change it here first and
+let the code follow. A convention that lives only in someone's head gets broken
+by the next person to touch the file.

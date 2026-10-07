@@ -35,7 +35,7 @@ export default defineConfig({
         // Only the built shell is precached. API calls are cross-origin and
         // deliberately left alone — a cached workout log would be worse than
         // an honest failure. Real offline logging needs a write queue; see
-        // the note in CLAUDE.md.
+        // the note in ARCHITECTURE.md.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: 'index.html',
       },
