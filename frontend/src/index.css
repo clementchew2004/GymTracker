@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Height of the mobile bottom tab bar, including the iOS home-indicator
+   inset. Anything pinned to the bottom of the viewport — the rest timer, a
+   page's own bottom padding — offsets by this rather than hardcoding a
+   number, so the bar's height is defined in exactly one place. Zero from
+   `sm` up, where navigation lives in the header instead. */
+:root {
+  --bottom-nav-h: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --bottom-nav-h: 0px;
+  }
+}

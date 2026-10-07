@@ -98,7 +98,10 @@ export function RestTimer({
     <div
       role="timer"
       aria-live="off"
-      className={`fixed inset-x-0 bottom-0 border-t ${
+      // Sits *above* the mobile tab bar rather than underneath it. On desktop
+      // --bottom-nav-h is 0, so this still pins to the viewport bottom.
+      style={{ bottom: "var(--bottom-nav-h)" }}
+      className={`fixed inset-x-0 z-10 border-t ${
         done
           ? "border-emerald-500/40 bg-emerald-950/80"
           : "border-neutral-800 bg-neutral-900/95"

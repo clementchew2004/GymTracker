@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
-import { NavLink, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 import { AuthScreen } from "./components/AuthScreen";
+import { BottomNav, HeaderNav } from "./components/Nav";
 import { LogScreen } from "./components/LogScreen";
 import { ProgressScreen } from "./components/ProgressScreen";
 import { WeeklySummaryScreen } from "./components/WeeklySummaryScreen";
 import { clearToken, getToken } from "./api/client";
 import { getMe, type User } from "./api/auth";
-
-const tabClass = ({ isActive }: { isActive: boolean }) =>
-  [
-    "rounded px-3 py-1.5 text-sm transition-colors",
-    isActive
-      ? "bg-neutral-800 text-neutral-100"
-      : "text-neutral-400 hover:text-neutral-100",
-  ].join(" ");
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -42,31 +35,35 @@ function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4 border-b border-neutral-800">
-        <h1 className="text-lg font-semibold">Gym Tracker</h1>
+      {/* No flex-wrap: on mobile the nav has moved to the bottom bar, so the
+          title, email and log-out button fit one row without crowding. */}
+      <header className="flex items-center gap-x-4 border-b border-neutral-800 px-4 py-3 sm:gap-x-6 sm:px-6 sm:py-4">
+        <h1 className="shrink-0 text-base font-semibold sm:text-lg">Gym Tracker</h1>
 
-        <nav className="flex gap-1">
-          <NavLink to="/" end className={tabClass}>Log</NavLink>
-          <NavLink to="/progress" className={tabClass}>Progress</NavLink>
-          <NavLink to="/summary" className={tabClass}>Summary</NavLink>
-        </nav>
+        <HeaderNav />
 
-        <div className="ml-auto flex items-center gap-4 text-sm">
-          <span className="text-neutral-500">{user.email}</span>
+        {/* min-w-0 lets a long email truncate instead of pushing Log out off-screen. */}
+        <div className="ml-auto flex min-w-0 items-center gap-3 text-sm sm:gap-4">
+          <span className="truncate text-neutral-500">{user.email}</span>
           <button
             onClick={() => { clearToken(); setUser(null); }}
-            className="text-neutral-400 hover:text-neutral-100"
+            className="shrink-0 text-neutral-400 hover:text-neutral-100"
           >
             Log out
           </button>
         </div>
       </header>
 
-      <Routes>
-        <Route path="/" element={<LogScreen user={user} />} />
-        <Route path="/progress" element={<ProgressScreen />} />
-        <Route path="/summary" element={<WeeklySummaryScreen user={user} />} />
-      </Routes>
+      {/* Clears the fixed bottom bar so the last row of content stays reachable. */}
+      <div style={{ paddingBottom: "var(--bottom-nav-h)" }}>
+        <Routes>
+          <Route path="/" element={<LogScreen user={user} />} />
+          <Route path="/progress" element={<ProgressScreen />} />
+          <Route path="/summary" element={<WeeklySummaryScreen user={user} />} />
+        </Routes>
+      </div>
+
+      <BottomNav />
     </div>
   );
 }
