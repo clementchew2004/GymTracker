@@ -105,7 +105,12 @@ npm run dev                   # http://localhost:4000
 
 Generate a JWT secret with `openssl rand -hex 32`.
 
-The seed prints a test login — `test@example.com` / `testpassword123`.
+The seed prints a test login — `test@local` / `testpassword123`.
+
+Point `DATABASE_URL` at a database you are happy to lose. `prisma migrate dev`
+resets the database when it detects drift, so a development copy is not
+optional. On Neon, a branch gives you one in a second and arrives already
+migrated and seeded.
 
 **Frontend**
 

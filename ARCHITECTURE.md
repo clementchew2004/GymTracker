@@ -213,9 +213,9 @@ npm run dev                   # tsx watch, reads .env, port 4000
 npm test                      # vitest (27 tests)
 npm run build                 # tsc -p tsconfig.build.json → dist/
 npm start                     # prisma migrate deploy && node dist/app.js
-npx prisma migrate dev        # create + apply a migration locally
+npx prisma migrate dev        # create + apply a migration — dev branch ONLY (see below)
 npx prisma studio             # browse the DB
-npx prisma db seed            # 20 exercises + test@example.com / testpassword123
+npx prisma db seed            # 20 exercises + test@local / testpassword123
 
 # frontend/
 npm run dev                   # vite, port 5173
@@ -228,6 +228,28 @@ npm run preview               # serve the production build on 4173
 list what each half needs. Backend: `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`,
 and `PORT` (injected by the host in production). Frontend: `VITE_API_URL`, baked
 in at build time — changing it needs a rebuild, not a restart.
+
+**Local and production use separate database branches.** They are two Neon
+branches of the same project, never the same database:
+
+| Branch | Used by           | Connection string lives in |
+|--------|-------------------|----------------------------|
+| `main` | production        | Render's dashboard         |
+| `dev`  | local development | `backend/.env`             |
+
+A Neon branch is a copy-on-write copy: schema, data and the
+`_prisma_migrations` table all come across, so a new branch needs no migration
+and no seed, and costs nothing until it diverges.
+
+The reason this matters is `prisma migrate dev`. When it finds drift between
+the migration history and the actual database it offers to **reset** — drop
+everything and replay from scratch. Aimed at `main` that is real users' data
+gone. (`migrate deploy`, which `npm start` runs in production, only applies
+pending migrations and never resets. That asymmetry is deliberate.)
+
+Data does not merge back. When the local copy drifts too far from reality,
+reset `dev` from `main` in the Neon console and carry on; schema changes
+travel the normal way, as migration files in git.
 
 ## Maintaining this document
 
